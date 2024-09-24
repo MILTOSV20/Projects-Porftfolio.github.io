@@ -1,0 +1,865 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>REAL ESTATE MARKET ANALYSIS</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <style>
+        .table-wrapper-shown {
+            display: block;
+        }
+
+        .table-wrapper {
+            display: none;
+            max-height: 700px;
+            overflow-y: auto;
+            transition: max-height 0.5s ease; /* Smooth transition */
+            
+        }
+        .code-snippet {
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+            transition: max-height 0.5s ease; /* Smooth transition */
+        }
+
+        /* Show content when 'show' class is added */
+        .show {
+            display: block;
+        }
+
+        table {
+            width: 100%; /* Make the table take full width of the container */
+            border-collapse: collapse; /* Collapses table borders for cleaner look */
+        }
+
+        th, td {
+            border: 1px solid #ccc; /* Border for table cells */
+            padding: 8px; /* Padding inside table cells */
+            text-align: left; /* Text alignment */
+        }
+
+        thead {
+            background-color: #f9f9f9; /* Background color for table header */
+        }
+
+        h2 {
+        margin-top: 125px; /* Adjust this value to create more space */
+        }
+
+        h3 {
+        margin-top: 100px; /* Adjust this value to create more space */
+        }
+		
+    </style>
+</head>
+<body class="is-preload">
+
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+        <!-- Header -->
+        <header id="header">
+            <a href="index.html" class="logo">DATA ANALYTICS PORTFOLIO</a>
+        </header>
+
+        <!-- Nav -->
+        <nav id="nav">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li class="active"><a href="project_1.html">EMPLOYEE DATABASE INSIGHTS</a></li>
+                <li class="active"><a href="project_2.html">REAL ESTATE MARKET ANALYSIS</a></li>
+                <li class="active"><a href="project_3.html">GREEK ECONOMY OVERVIEW</a></li>
+                <!-- <li class="active"><a href="project_4.html">Tableau Project 1</a></li> -->
+            </ul>
+            <ul class="icons">
+                <li><a href="https://github.com/MILTOSV20" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+                <li><a href="https://gr.linkedin.com/in/miltiadis-voutryas-7890b9306" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main -->
+        <div id="main">
+            <!-- Post -->
+            <section class="post">
+                <header class="major">
+                    <span class="date"></span>
+                    <h1>REAL ESTATE MARKET ANALYSIS</h1>
+                    <p>This project aims to provide a comprehensive analysis of the housing market in Greece during 2022 
+                        by examining historical data, identifying trends, and making predictions about 
+                        future price movements. By leveraging SQL for data extraction and descriptive analysis,
+                        followed by regression analysis in  R, this study will offer
+                        valuable insights into the factors driving market prices.
+                    </p>
+                </header>
+                <div class="image main"><img src="images/athens-thes.png" alt="" /></div>
+
+                
+                <h2>DATA CLEANING</h2>
+                <p>In the initial phase of our project on real estate market analysis in Greece, we focus on cleaning the dataset
+                    to ensure the accuracy and reliability of our subsequent analyses.
+                    This data cleaning process involves several key steps:<br>
+                </p>
+                   
+                <ol>
+                    <li>Checking for Duplicates: We begin by identifying and removing any duplicate records within the dataset. Duplicates can skew analysis and lead to incorrect conclusions, so it’s crucial to ensure each entry is unique and accurately represented.
+                    </li>
+                    <li>Standardizing Data and Fixing Errors: Next, we standardize the data formats to maintain consistency across all fields. This includes aligning date formats, standardizing location names, and correcting any typographical errors or inconsistencies in the dataset.</li>
+                    <li>Handling Null Values: We then examine the dataset for null or missing values. Missing data can impact the quality of our analysis, so we either fill in these gaps using appropriate imputation methods or remove records with excessive missing values, depending on their impact on the overall dataset.</li>
+                    <li>Removing Unnecessary Columns and Rows: Finally, we review the dataset to identify and remove any columns or rows that are not relevant to our analysis. This helps streamline the dataset, making it more manageable and focusing our efforts on the most pertinent information.</li>
+                </ol>
+                <p>These cleaning steps are essential to prepare a high-quality dataset that will support accurate and insightful analysis of the Greek housing market.</p>
+                <!-- QUESTION 2 -->
+                <h3>DUPLICATE DATA</h3>
+                <p>Before we start cleaning our data first we create a duplicate. 
+                    The reason we create a duplicate table is to have a back-up in case we make a mistake during the data cleaning process.  </p>
+                <!-- CODE TOGGLE BUTTON -->
+                <button class="toggle-code-button" data-target="#code-snippet-1">CODE</button>
+                <div id="code-snippet-1" class="code-snippet">
+                    <!-- Preformatted Code -->
+                    <pre>
+                        <code>
+-- DUPLICATE TABLE
+USE housing;
+
+CREATE TABLE IF NOT EXISTS houses_1
+LIKE houses;
+
+INSERT INTO houses_1
+SELECT *
+FROM houses;
+                        </code>
+                    </pre>
+                </div>
+
+            <!-- QUESTION 2 -->
+            <h3>IDENTIFY DUPLICATES</h3>
+            <p>
+                In order to find any duplicate rows, we utilize a WINDOW function which assigns a unique row number to each row within a partition. Because there is no primary key, we partition our data by each column of the table. The rows with identical values in these columns are treated as duplicates. <br>
+                Since in MySQL we cannot delete rows utilizing a CTE, we create a new table `houses_2` to store the data derived from the window function along with the `row_num` column. Finally, we delete the duplicate rows indicated by the `row_num` column.<br>
+            </p>
+
+            <!-- CODE TOGGLE BUTTON -->
+            <button class="toggle-code-button" data-target="#code-snippet-2">CODE</button>
+            <div id="code-snippet-2" class="code-snippet">
+                <!-- Preformatted Code -->
+                <pre>
+                    <code>
+-- SEARCH FOR DUPLICATES
+
+WITH cte_duplicates AS (
+    SELECT * 
+    FROM (
+        SELECT *,
+            ROW_NUMBER() OVER (
+                PARTITION BY 
+                    location_name,
+                    location_region,
+                    res_date,
+                    res_type,
+                    res_address,
+                    res_price,
+                    res_price_sqr,
+                    res_sqr,
+                    construction_year,
+                    levels,
+                    bedrooms,
+                    bathrooms,
+                    deleted,
+                    deleted_at,
+                    status,
+                    energyclass,
+                    auto_heating,
+                    solar,
+                    cooling,
+                    safe_door,
+                    gas,
+                    fireplace,
+                    furniture,
+                    student,
+                    parking
+            ) AS row_num
+        FROM houses_1
+    ) duplicates
+    WHERE row_num > 1
+)
+SELECT *
+FROM cte_duplicates;
+                    </code>
+                </pre>
+            </div>
+
+        <!-- TABLE TOGGLE BUTTON -->
+        <button class="toggle-table-button" data-target="#table1-wrapper">TABLE</button>
+        <div id="table1-wrapper" class="table-wrapper">
+            <table id="table1" border="1">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <h3>DELETE DUPLICATES</h3>
+        <p>Since in MySQL we cannot delete rows utilizing a CTE, we create a new table houses_2 to store the data derived from 
+            the window function along with the row_num column. Finally we delete the 
+            duplicate rows where row_num bigger than 1 indicating they are a duplicate.
+            After that we check if there any duplicate rows left by quering a table where where rows 
+            have row_num bigger than 1. Our query returns an empty table indicating no duplicate values.
+        </p>
+        <button class="toggle-code-button" data-target="#code-snippet-3">CODE</button>
+        <div id="code-snippet-3" class="code-snippet">
+            <!-- Preformatted Code -->
+            <pre>
+                <code>
+-- DELETE DUPLICATES 
+
+CREATE TABLE `houses_2` (
+`location_name` varchar(50) DEFAULT NULL,
+`location_region` varchar(50) DEFAULT NULL,
+`res_date` varchar(50) DEFAULT NULL,
+`res_type` varchar(50) DEFAULT NULL,
+`res_address` varchar(50) DEFAULT NULL,
+`res_price` int DEFAULT NULL,
+`res_price_sqr` double DEFAULT NULL,
+`res_sqr` double DEFAULT NULL,
+`construction_year` double DEFAULT NULL,
+`levels` varchar(50) DEFAULT NULL,
+`bedrooms` double DEFAULT NULL,
+`bathrooms` double DEFAULT NULL,
+`deleted` int DEFAULT NULL,
+`deleted_at` varchar(50) DEFAULT NULL,
+`status` varchar(50) DEFAULT NULL,
+`energyclass` varchar(50) DEFAULT NULL,
+`auto_heating` int DEFAULT NULL,
+`solar` int DEFAULT NULL,
+`cooling` int DEFAULT NULL,
+`safe_door` int DEFAULT NULL,
+`gas` int DEFAULT NULL,
+`fireplace` int DEFAULT NULL,
+`furniture` int DEFAULT NULL,
+`student` int DEFAULT NULL,
+`parking` varchar(50) DEFAULT NULL,
+row_num INT
+);
+
+INSERT INTO houses_2 (
+SELECT *,
+        ROW_NUMBER() OVER (
+            PARTITION BY 
+                location_name,
+                location_region,
+                res_date,
+                res_type,
+                res_address,
+                res_price,
+                res_price_sqr,
+                res_sqr,
+                construction_year,
+                levels,
+                bedrooms,
+                bathrooms,
+                deleted,
+                deleted_at,
+                'status',
+                energyclass,
+                auto_heating,
+                solar,
+                cooling,
+                safe_door,
+                gas,
+                fireplace,
+                furniture,
+                student,
+                parking
+        ) AS row_num
+    FROM houses_1);
+
+DELETE 
+FROM houses_2
+WHERE row_num >1;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table2-wrapper">TABLE</button>
+                <div id="table2-wrapper" class="table-wrapper">
+                    
+                    <table id="table2" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                        
+                <!-- QUESTION 3 -->
+                <h3>FORMATTING res_date COLUMN</h3>
+                <p>Here the column variable type changes from VARCHAR(50) to DATE.</p>
+                <button class="toggle-code-button" data-target="#code-snippet-4">CODE</button>
+                <div id="code-snippet-4" class="code-snippet">
+                    <pre>
+                        <code>
+-- DATES
+SELECT res_date, STR_TO_DATE(res_date, '%d/%m/%Y')
+FROM houses_2;
+
+UPDATE houses_2
+SET res_date = STR_TO_DATE(res_date, '%d/%m/%Y');
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table3-wrapper">TABLE</button>
+                <div id="table3-wrapper" class="table-wrapper">
+
+                    <table id="table3" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <h3>FORMATTING deleted_at AND DELTED COLUMNS</h3>
+                <p>Here we change the format OF THE deleted_at column from VARCHAR(50) to DATE. We also rename the columns to sold_at and sold accordingly. </p>
+                <button class="toggle-code-button" data-target="#code-snippet-5">CODE</button>
+                <div id="code-snippet-5" class="code-snippet">
+                    <pre>
+                        <code>
+UPDATE houses_2
+SET deleted_at = NULL
+WHERE TRIM(deleted_at) = '';
+
+
+UPDATE houses_2 
+SET deleted_at = DATE(STR_TO_DATE(deleted_at, '%d/%m/%Y %H:%i'));
+
+ALTER TABLE houses_2 
+CHANGE deleted_at sold_at DATE;
+
+ALTER TABLE houses_2
+CHANGE deleted sold INT;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table4-wrapper">Table</button>
+                <div id="table4-wrapper" class="table-wrapper">
+                    
+                    <table id="table4" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- QUESTION 4 -->
+                <h3>FORMATTING res_address COLUMN</h3>
+                <p>The below code snippet cleans the address column. Also corrects any wrong vocabulary
+                    and turns any remaining addresses in Greek.
+                </p>
+                <button class="toggle-code-button" data-target="#code-snippet-6">CODE</button>
+                <div id="code-snippet-6" class="code-snippet">
+                    <pre>
+                        <code>
+-- FORMAT res_address
+UPDATE houses_2
+SET res_address = TRIM(REPLACE(res_address, 'Αθήνα,', ''));
+UPDATE houses_2
+SET res_address = TRIM(REPLACE(res_address, 'Θεσσαλονίκη,', ''));
+UPDATE houses_2
+SET res_address = TRIM(REPLACE(res_address, 'Thessaloniki,', ''));
+UPDATE houses_2
+SET res_address = TRIM(REPLACE(res_address, 'Athina,', ''));
+UPDATE houses_2
+SET res_address = 'Αγία Βαρβάρα'
+WHERE res_address = 'Αγία Βαρβάρα,Άνω Αγία Βαρβάρα';
+UPDATE houses_2
+SET res_address = 'Αγία Παρασκευή, Πευκάκια'
+WHERE res_address = 'Agia Paraskevi,Πευκάκια';
+UPDATE houses_2
+SET res_address ='Νέα Φιλαδέλφεια,Αμπέλια'
+WHERE res_address = 'Νέα Φιλαδέλφεια Αττικής,Αμπέλια';
+UPDATE houses_2
+SET res_address ='Νέα Σμύρνη,Άγιος Σώστης'
+WHERE res_address = 'Nea Smirni,Άγιος Σώστης';
+UPDATE houses_2
+SET res_address ='Άλιμος'
+WHERE res_address = 'Alimos';
+UPDATE houses_2
+SET res_address ='Ελληνικό'
+WHERE res_address = 'Elliniko';
+UPDATE houses_2
+SET res_address = 'Ελληνικό,Ολυμπιακές Εγκαταστάσεις - Αεροδρόμιο'
+WHERE res_address LIKE '%Ολυμπιακές Εγκαταστάσεις - Αεροδρόμιο%';
+UPDATE houses_2
+SET res_address ='Αχαρνές,Άγιος Πέτρος'
+WHERE res_address = 'Acharnes,Άγιος Πέτρος';
+UPDATE houses_2
+SET res_address ='Βάρη'
+WHERE res_address LIKE '%Vari%';
+UPDATE houses_2
+SET res_address = 'Άγιοι Ανάργυροι'
+WHERE res_address LIKE '%Agii Anargiri%';
+UPDATE houses_2
+SET res_address = 'Καλλιθέα'
+WHERE res_address LIKE '%Kalithea%';
+UPDATE houses_2
+SET res_address = 'Παλαιό Φάληρο'
+WHERE res_address LIKE '%Paleo Faliro%';
+UPDATE houses_2
+SET res_address = 'Νέα Σμύρνη'
+WHERE res_address LIKE '%Nea Smirni%';
+UPDATE houses_2
+SET res_address = 'Καλύβια'
+WHERE res_address LIKE '%Kalivia%';
+UPDATE houses_2
+SET res_address ='Γλυφάδα'
+WHERE res_address LIKE '%Glifada%' OR res_address LIKE '%Vlichada%';
+UPDATE houses_2
+SET res_address = 'Βριλήσσια'
+WHERE res_address LIKE '%Vrilissia%';
+UPDATE houses_2
+SET res_address = 'Πειραιάς'
+WHERE res_address LIKE '%Pireas%';
+UPDATE houses_2
+SET res_address = 'Χαλάνδρι'
+WHERE res_address LIKE '%Chalandri%';
+UPDATE houses_2
+SET res_address ='Γλυφάδα'
+WHERE res_address LIKE '%Glifada%';
+UPDATE houses_2
+SET res_address ='Ηλιούπολη'
+WHERE res_address LIKE '%Ilioupoli%';
+UPDATE houses_2
+SET res_address ='Βούλα,Άνω Βούλα'
+WHERE res_address = 'Voula,Άνω Βούλα';
+
+SELECT DISTINCT res_address
+FROM houses_2;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table5-wrapper">Table</button>
+                <div id="table5-wrapper" class="table-wrapper">
+                    
+                    <table id="table5" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                
+                
+                
+                <h2>EXPLORATORY DATA ANALYSIS</h2>
+                <p>To gain a deeper understanding of the housing trends, we analyzed the price, size, location, and some other features. 
+                    This dataset covers two main regions, Attiki and Thessaloniki. The exploratory analysis covers: 
+                </p>
+                <ul>
+                    <li>Regional Price Differences: How average, minimum, and maximum prices vary across different regions.</li>
+                    <li>Price Trends Over Time: The evolution of average house prices on a monthly basis.</li>
+                    <li>Price Range Distribution: How houses are distributed across different price ranges.</li>
+                    <li>Neighborhood-Specific Insights: The most expensive and affordable neighborhoods in Attiki and Thessaloniki.</li>
+                    <li>Impact of House Features on Prices: How factors like heating, solar panels, and fireplaces affect property values.</li>
+                    <li>Time to Sell: How long it takes to sell a house in different regions.</li>
+                </ul>
+                
+                <h3>Regional Price Differences</h3>
+                <p>Between Αττική and Θεσσαλονίκη, Αττική stands out as the more expensive region on average. 
+                    This is unsurprising, given that Αθήνα (Athens), Greece’s capital and economic hub, is located in Αττική, driving higher demand and property values. 
+                </p>
+                <button class="toggle-code-button" data-target="#code-snippet-7">CODE</button>
+                <div id="code-snippet-7" class="code-snippet">
+                    <pre>
+                        <code>
+SELECT 
+    location_region, 
+    AVG(res_price) AS average_price, 
+    MIN(res_price) AS min_price, 
+    MAX(res_price) AS max_price
+FROM houses_2
+GROUP BY location_region;
+                        
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table6-wrapper">TABLE</button>
+                <div id="table6-wrapper" class="table-wrapper">
+                    
+                    <table id="table6" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div> 
+
+
+                
+                <p>Below we can see the most to least expensive neighborhoods in terms of house prices both in "Αττική" and "Θεσσαλονίκη". 
+                    Most expensive areas in "Αττική" on average are "Βάρη - Βούλα - Βουλιαγμένη", "Βριλήσσια", "Φιλοθέη - Ψυχικό" while 
+                    the cheapest buildings are located in  "Άγιοι Ανάργυροι", "Πέραμα" and "Ελευσίνα". <br>
+                    When it comes to "Θεσσαλονίκη" most expensive properties are in "Δήμος Θερμαϊκού", "Καλλιθέα",  "Καλαμαριά" with the most expensive estate being in the center of the city.
+                    Finally  the least expensive places are "Νεάπολη", "Δήμος Κορώνειας" and "Άσσηρος".             </p>
+                <button class="toggle-code-button" data-target="#code-snippet-8">CODE</button>
+                <div id="code-snippet-8" class="code-snippet">
+                    <pre>
+                        <code>
+SELECT 
+    location_region, 
+    location_name, 
+    MAX(res_price) AS max_price,
+    MIN(res_price) AS min_price, 
+    ROUND(AVG(res_price),2) AS average_price
+FROM houses_2
+GROUP BY location_region, location_name
+ORDER BY location_region, max_price DESC;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table7-wrapper">TABLE</button>
+                <div id="table7-wrapper" class="table-wrapper">
+                    
+                    <table id="table7" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div> 
+
+
+
+                <h3>PRICE DISTRIBUTION</h3>
+                <p>The below code snippet cleans the address column. Also corrects any wrong vocabulary
+                    and turns any remaining addresses in Greek.
+                </p>
+                <button class="toggle-code-button" data-target="#code-snippet-9">CODE</button>
+                <div id="code-snippet-9" class="code-snippet">
+                    <pre>
+                        <code>
+SELECT 
+    CASE
+        WHEN res_price BETWEEN 11000 AND 50000 THEN '1 11000 - 50000'
+        WHEN res_price BETWEEN 50001 AND 100000 THEN '2 50001 - 100000'
+        WHEN res_price BETWEEN 100001 AND 200000 THEN '3 100001 - 200000'
+        WHEN res_price BETWEEN 200001 AND 500000 THEN '4 200001 - 500000'
+        WHEN res_price BETWEEN 500001 AND 1000000 THEN '5 500001 - 1000000'
+        WHEN res_price BETWEEN 1000001 AND 5000000 THEN '6 1000001 - 5000000'
+        WHEN res_price BETWEEN 5000001 AND 10000000 THEN '7 5000001 - 10000000'
+        ELSE '8 >10000000'
+    END AS price_range, 
+    COUNT(*) AS count
+FROM houses_2
+GROUP BY price_range
+ORDER BY price_range;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table8-wrapper">Table</button>
+                <div id="table8-wrapper" class="table-wrapper">
+                    
+                    <table id="table8" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div> 
+
+
+
+                <h3>AVERAGE PRICE BY HEATING AND COOLNG SYSTEMS</h3>
+                <p>On average, the most expensive houses are equipped with both a cooling system and a fireplace. Interestingly, despite the growing emphasis on energy efficiency, having solar panels does not have as significant an impact on price as these other features. 
+                    In fact, houses with solar panels tend to be less expensive.
+                </p>
+                <button class="toggle-code-button" data-target="#code-snippet-10">CODE</button>
+                <div id="code-snippet-10" class="code-snippet">
+                    <pre>
+                        <code>
+SELECT auto_heating,solar, cooling,fireplace, AVG(res_price) AS avg_price
+FROM houses_2
+GROUP BY auto_heating,solar, cooling,fireplace
+ORDER BY avg_price DESC;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table9-wrapper">TABLE</button>
+                <div id="table9-wrapper" class="table-wrapper">
+                    
+                    <table id="table9" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div> 
+
+
+
+
+                <h3>TIME TAKEN TO SELL</h3>
+                <p>The following query calculates the average number of days it took for properties to sell, based on the difference between res_date and sold_at. 
+                    The results show that, on average, properties in "Αττική" take 28 days longer to sell compared to those in "Θεσσαλονίκη." 
+                    This difference is likely influenced by several factors:
+                    <ul>
+                        <li>Sample Size Disparity: In "Αττική," 10,208 houses were sold, whereas only 260 were sold in "Θεσσαλονίκη." 
+                            The larger sample in "Αττική" could contribute to a higher variance in the number of days it takes to sell a house, making the average less reflective of typical cases.</li>
+                        <li>Price and Demand: Additionally, properties in "Αττική" tend to be more expensive, which could lower demand and lengthen the time it takes to sell them.</li>
+                    </ul>
+                   
+                </p>
+                <button class="toggle-code-button" data-target="#code-snippet-11">CODE</button>
+                <div id="code-snippet-11" class="code-snippet">
+                    <pre>
+                        <code>
+
+SELECT location_region, AVG(DATEDIFF(sold_at, res_date)) AS avg_time_to_sell
+FROM houses_2
+GROUP BY location_region
+HAVING avg_time_to_sell IS NOT NULL
+ORDER BY location_region, avg_time_to_sell ;
+
+SELECT  location_region, COUNT(sold_at) AS sold_houses
+FROM houses_2
+GROUP BY location_region;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-table-button" data-target="#table10-wrapper">TABLE</button>
+                <div id="table10-wrapper" class="table-wrapper">
+                    
+                    <table id="table10" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div> 
+                <button class="toggle-table-button" data-target="#table11-wrapper">TABLE</button>
+                <div id="table11-wrapper" class="table-wrapper">
+                    
+                    <table id="table11" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div> 
+
+
+                <h2>REGERESSION ANALYSIS WITH R</h2>
+                <p>Regression analysis is a powerful statistical technique used to examine the relationship 
+                    between one or more independent variables and a dependent variable. In this analysis, 
+                    we focus on predicting the price of differenttypes of properties based on various features 
+                    such as size, location, number of rooms, and additional amenities.</p>
+                <h3>Key Steps in the Analysis:</h3>
+                <ul>
+                    <li>Data Preparation: Cleaning and transforming the dataset.</li>
+                    <li>Model Fitting: Creating a linear regression model using selected predictors.</li>
+                    <li>Model Evaluation: Assessing the model’s performance and significance.</li>
+                    <li>Interpretation: Understanding the coefficients and overall fit of the model.</li>
+                </ul>
+                <button class="toggle-code-button" data-target="#code-snippet-13">CODE</button>
+                <div id="code-snippet-13" class="code-snippet">
+                    <pre>
+                        <code>
+# Load required libraries
+library(dplyr)
+library(fastDummies)  # For One-Hot Encoding
+library(broom)       # For tidy output from models
+library(readxl)
+houses_2_final <- read_excel("C:\\Users\\MILTOS\\Desktop\\DATA ANALYSIS\\PROJECTS\\R\\houses_2_final.xlsx")
+
+
+# Sample data frame creation (you would replace this with your actual data)
+# houses_2_final <- read.csv("your_data.csv")
+
+# Step 1: Data Preparation
+
+# Create listing_age column
+houses_2_final <- houses_2_final %>%
+    mutate(listing_age = as.numeric(difftime(sold_at, res_date, units = "days")))
+
+# Drop unwanted columns
+houses_2_final <- houses_2_final %>%
+    select(-c('sold_at', 'res_date', 'res_price_sqr'))
+
+# M-Estimate Encoding
+mean_price_by_location <- houses_2_final %>%
+    group_by(location_name) %>%
+    summarize(mean_res_price = mean(res_price, na.rm = TRUE))
+
+mean_price_by_address <- houses_2_final %>%
+    group_by(res_address) %>%
+    summarize(mean_res_price = mean(res_price, na.rm = TRUE))
+
+houses_2_final <- houses_2_final %>%
+    left_join(mean_price_by_location, by = "location_name") %>%
+    left_join(mean_price_by_address, by = "res_address") %>%
+    mutate(location_name_encoded = round(mean_res_price.x, 0),
+            res_address_encoded = round(mean_res_price.y, 0)) %>%
+    select(-mean_res_price.x, -mean_res_price.y)
+
+# Ordinal Encoding
+houses_2_final <- houses_2_final %>%
+    mutate(levels_encoded = as.numeric(factor(levels, ordered = TRUE)),
+            parking_encoded = as.numeric(factor(parking, ordered = TRUE))) %>%
+    select(-levels, -parking)
+
+# One-Hot Encoding
+houses_2_final <- dummy_cols(houses_2_final, 
+                                select_columns = c('location_region', 'res_type', 'energyclass', 'status'), 
+                                remove_selected_columns = TRUE)
+
+# Step 2: Handling Missing Values
+houses_2_final <- houses_2_final %>%
+    mutate(across(where(is.numeric), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)))
+
+# Step 3: Removing Outliers
+for (col in c("res_price", "res_sqr")) {
+    num <- nrow(houses_2_final)  # Number of rows before filtering
+    
+    # Calculate the 2nd and 98th percentiles
+    q_low <- quantile(houses_2_final[[col]], 0.02, na.rm = TRUE)
+    q_hi <- quantile(houses_2_final[[col]], 0.98, na.rm = TRUE)
+    
+    # Filter the data to remove outliers
+    houses_2_final <- houses_2_final %>%
+    filter((!!sym(col)) > q_low & (!!sym(col)) < q_hi)
+    
+    filteredNum <- nrow(houses_2_final)  # Number of rows after filtering
+    
+    # Print the number of entries removed
+    cat(sprintf("Removing outliers for feature %s. Removed %d entries\n", 
+                col, num - filteredNum))
+}
+
+
+
+# Step 4: Fitting a Linear Regression Model
+# Define the model formula (you can adjust the predictors based on your needs)
+model_formula <- as.formula("res_price ~ res_sqr + construction_year + bedrooms + bathrooms +
+                    sold + auto_heating + solar + cooling + safe_door + gas + 
+                    fireplace + furniture + listing_age +
+                    location_name_encoded  + 
+                    levels_encoded + 
+                    location_region_Αττική + 
+                    res_type_Διαμέρισμα + res_type_Κτίριο + res_type_Μεζονέτα + 
+                    res_type_Οικία + 
+                    energyclass_Α + energyclass_Α+ + energyclass_Β + 
+                    energyclass_Β+ + energyclass_Γ + energyclass_Δ +
+                    `status_Άριστη` + `status_Ανακαινισμένο` + 
+                    `status_Καλή` + `status_Νεόδμητο` + 
+                    `status_Υπο κατασκευή` + 
+                    `status_Χρήζει ανακαίνισης`")
+
+# Fit the linear regression model
+linear_model <- lm(model_formula, data = houses_2_final)
+
+# Step 5: Summarizing the Model Results
+model_summary <- summary(linear_model)
+
+# Print the summary
+print(model_summary)
+
+# Tidy output of the model coefficients
+tidy_results <- broom::tidy(linear_model)
+print(tidy_results)
+                            
+                        
+                        </code>
+                    </pre>
+                </div>
+                <h3>Model Interpretation</h3>
+
+                    <h4>Residuals</h4>
+                    <p>The residuals give insight into the differences between observed and predicted values of <strong>res_price</strong>:</p>
+                    <table>
+                        <tr><th>Metric</th><th>Value</th></tr>
+                        <tr><td>Min</td><td>-665,679</td></tr>
+                        <tr><td>1Q (First Quartile)</td><td>-68,200</td></tr>
+                        <tr><td>Median</td><td>-13,095</td></tr>
+                        <tr><td>3Q (Third Quartile)</td><td>42,199</td></tr>
+                        <tr><td>Max</td><td>1,357,281</td></tr>
+                    </table>
+                    <p>The range of residuals suggests that while the model performs well for many predictions, there are some significant over- and under-predictions. The presence of extreme values (both positive and negative) could indicate outliers or variability in the data.</p>
+                
+                    <h4>Coefficients</h4>
+                    <p>Each coefficient represents the estimated effect on <strong>res_price</strong> for a one-unit increase in the predictor variable, holding all other variables constant. Here are key findings:</p>
+                    
+                    <button class="toggle-table-button" data-target="#table13-wrapper">TABLE</button>
+                    <div id="table13-wrapper" class="table-wrapper">
+                    
+                        <table id="table13" border="1">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <h4>Significant Predictors:</h4>
+                    <ul>
+                        <li><strong>res_sqr:</strong> Each additional square meter increases the price by approximately 1,682. This is highly significant (p < 2e-16).</li>
+                        <li><strong>construction_year:</strong> Each additional year in construction adds about 507 to the price (p < 4.32e-06).</li>
+                        <li><strong>bathrooms:</strong> Each bathroom increases the price by about 32,988 (p < 2e-16).</li>
+                        <li><strong>cooling:</strong> The presence of cooling increases the price by 27,270 (p < 5.89e-15).</li>
+                        <li><strong>safe_door:</strong> Increases the price by 24,555 (p < 3.12e-11).</li>
+                        <li><strong>gas:</strong> Each unit increase contributes 41,410 (p < 2e-16).</li>
+                        <li><strong>furniture:</strong> Adds about 24,600 to the price (p < 0.0001).</li>
+                        <li><strong>location_region_Αττική:</strong> Living in this region adds about 47,060 to the price (p < 4.65e-11).</li>
+                        <li><strong>status_Υπο κατασκευή:</strong> Indicates that properties under construction increase the price by about 117,500 (p < 2e-16).</li>
+                    </ul>
+                
+                    <h4>Non-Significant Predictors:</h4>
+                    <ul>
+                        <li><strong>bedrooms</strong> and <strong>solar:</strong> These predictors do not significantly impact price based on their p-values (0.177593 and 0.205656, respectively).</li>
+                    </ul>
+                
+                    <h3>Model Fit</h3>
+                    <table>
+                        <tr><th>Metric</th><th>Value</th></tr>
+                        <tr><td>Multiple R-squared</td><td>0.6363</td></tr>
+                        <tr><td>Adjusted R-squared</td><td>0.6353</td></tr>
+                        <tr><td>Residual Standard Error</td><td>160,800</td></tr>
+                        <tr><td>F-statistic</td><td>663.8 (p < 2.2e-16)</td></tr>
+                    </table>
+                    <p>Multiple R-squared indicates that approximately 63.63% of the variance in <strong>res_price</strong> is explained by the model. While this is a decent fit, there is still room for improvement. The adjusted R-squared confirms the fit while accounting for the model's complexity.</p>
+                
+                    <h3>Summary</h3>
+                    <p><strong>Key Influencers:</strong> The size of the property (<strong>res_sqr</strong>), number of bathrooms, and certain features (like cooling and safe doors) significantly impact the price. The location also plays a crucial role.</p>
+                    <p><strong>Model Performance:</strong> While the model explains a substantial portion of the variance, further refinement (like removing non-significant predictors) could improve it.</p>
+                
+            </section>
+        </div>
+
+
+		<!-- Footer -->
+		<footer id="footer">
+						
+			<section class="split contact">
+				
+				<section>
+					<h3>Phone</h3>
+					<p><a href="#">6946827543</a></p>
+				</section>
+				<section>
+					<h3>Email</h3>
+					<p><a href="#">miltosvout@gmail.com</a></p>
+				</section>
+				<section>
+					<h3>Social</h3>
+					<ul class="icons alt">
+						
+						<li><a href="https://github.com/MILTOSV20" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+                        <li><a href="https://gr.linkedin.com/in/miltiadis-voutryas-7890b9306" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+					</ul>
+				</section>
+			</section>
+		</footer>
+
+		<!-- Copyright -->
+		<div id="copyright">
+			<ul><li></li><li><a href=""></a></li></ul>
+		</div>
+        <!-- Copyright -->
+        <div id="copyright">
+            
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/createtable.js"></script>
+    <!-- Proper function call -->
+    
+</body>
+</html>

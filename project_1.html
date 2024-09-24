@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>EMPLOYEE DATABASE INSIGHTS</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <style>
+        /* Add a specific height to the table wrapper */
+        .table-wrapper {
+            max-height: 300px; /* Adjust this height as needed */
+            overflow-y: auto; /* Enables vertical scrolling */
+            border: 1px solid #ccc; /* Optional: Adds a border around the scrollable area */
+            margin-bottom: 50px; /* Adjust the value as needed */
+            display: none; /* Initially hide the table */
+        }
+        
+        .table-wrapper.show {
+            display: block; /* Show the table when the class is added */
+        }
+
+        
+        table {
+            width: 100%; /* Make the table take full width of the container */
+            border-collapse: collapse; /* Collapses table borders for cleaner look */
+        }
+
+        th, td {
+            border: 1px solid #ccc; /* Border for table cells */
+            padding: 8px; /* Padding inside table cells */
+            text-align: left; /* Text alignment */
+        }
+
+        thead {
+            background-color: #f9f9f9; /* Background color for table header */
+        }
+		
+    </style>
+</head>
+<body class="is-preload">
+
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+        <!-- Header -->
+        <header id="header">
+            <a href="index.html" class="logo">DATA ANALYTICS PORTFOLIO</a>
+        </header>
+
+        <!-- Nav -->
+        <nav id="nav">
+            <ul class="links">
+                <li><a href="index.html">Home</a></li>
+                <li class="active"><a href="project_1.html">EMPLOYEE DATABASE INSIGHTS</a></li>
+                <li class="active"><a href="project_2.html">REAL ESTATE MARKET ANALYSIS</a></li>
+                <li class="active"><a href="project_3.html">GREEK ECONOMY OVERVIEW</a></li>
+                <!-- <li class="active"><a href="project_4.html">Tableau Project 1</a></li> -->
+            </ul>
+            <ul class="icons">
+                <li><a href="https://github.com/MILTOSV20" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+                <li><a href="https://gr.linkedin.com/in/miltiadis-voutryas-7890b9306" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main -->
+        <div id="main">
+            <!-- Post -->
+            <section class="post">
+                <header class="major">
+                    <span class="date"></span>
+                    <h1>Employee Database Insights</h1>
+                    <ul>
+                        <li>Creation of Complex Queries with JOIN.</li>
+                        <li>Use of Aggregate Functions: COUNT(), AVG(), and ROUND().</li>
+                        <li>Data Grouping with GROUP BY.</li>
+                        <li>Condition Management with HAVING and WHERE.</li>
+                        <li>Stored Procedures. Condition Management with CASE.</li>                            
+                    </ul>
+                    <p>
+                        The project consists of four SQL queries, aimed at extracting specific data from an employee database. 
+                        The queries focus on analyses related to employee gender, managers, salaries,
+                        and the application of a stored procedure for calculating the average salary by gender and department.
+                    </p>
+                </header>
+                <div class="image main"><img src="images/employees.jpg" alt="" /></div>
+
+                <!-- QUESTION 1 -->
+                <h3>ANNUAL BREAKDOWN OF MALE AND FEMALE EMPLOYEES (SINCE 1990)</h3>
+                <p>The number of employees per gender is calculated for each year. The goal is to monitor the evolution of the number of employees by gender over time.</p>
+                <div>
+                    <!-- Preformatted Code -->
+                    <h3>Code</h3>
+                    <pre>
+                        <code>
+USE employees_mod ;
+SELECT 
+
+YEAR(d.from_date) AS calendar_year,
+e.gender,    
+COUNT(e.emp_no) AS num_of_employees
+
+FROM     
+t_employees e         
+JOIN    
+t_dept_emp d ON d.emp_no = e.emp_no
+
+GROUP BY calendar_year , e.gender 
+
+HAVING calendar_year >= 1990;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-button" data-target="#table1-wrapper">Table</button>
+                <div id="table1-wrapper" class="table-wrapper">
+                    
+                    <table id="table1" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                
+                <div class='tableauPlaceholder' id='viz1725831716319' style='position: relative'><noscript><a href='#'><img alt='A breakdown between male and female employees ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Book22_17258314970630&#47;chart1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1725831716319');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script'); scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js'; vizElement.parentNode.insertBefore(scriptElement, vizElement);  </script>
+                
+                    <!-- QUESTION 2 -->
+                    <h3>COMPARISON OF MALE AND FEMALE MANAGERS PER DEPARTMENT (SINCE 1990)</h3>
+                    <p>The number of active managers per department is counted by gender. The goal is to highlight the differences in gender representation in managerial positions across departments.</p>
+                    <div>
+                        <!-- Preformatted Code -->
+                        <h3>Code</h3>
+                        <pre>
+                            <code>
+SELECT 
+    d.dept_name,
+    ee.gender,
+    dm.emp_no,
+    dm.from_date,
+    dm.to_date,
+    e.calendar_year,
+    CASE
+        WHEN
+            YEAR(dm.to_date) >= e.calendar_year
+                AND YEAR(dm.from_date) <= e.calendar_year
+        THEN
+            1
+        ELSE 0
+    END AS active
+FROM
+    (SELECT 
+        YEAR(hire_date) AS calendar_year
+    FROM
+        t_employees
+    GROUP BY calendar_year) e
+        CROSS JOIN
+    t_dept_manager dm
+        JOIN
+    t_departments d ON dm.dept_no = d.dept_no
+        JOIN
+    t_employees ee ON dm.emp_no = ee.emp_no
+ORDER BY dm.emp_no , calendar_year;
+                                            </code>
+                                        </pre>
+                                    </div>
+                                    <button class="toggle-button" data-target="#table2-wrapper">Table</button>
+                    <div id="table2-wrapper" class="table-wrapper">
+                        
+                        <table id="table2" border="1">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class='tableauPlaceholder' id='viz1725831877157' style='position: relative'><noscript><a href='#'><img alt='Number of managers per department ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart2&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Book22_17258314970630&#47;chart2' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart2&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1725831877157');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script'); scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js'; vizElement.parentNode.insertBefore(scriptElement, vizElement);  </script>
+                 
+                    
+                <!-- QUESTION 3 -->
+                <h3>AVERAGE SALARY OF MALE AND FEMALE EMPLOYEES BY DEPARTMENT AND YEAR (UP TO 2002)</h3>
+                <p>The average salary of male and female employees is calculated for each department and year, up to 2002. This query displays the employee's gender, the department name, the average salary rounded to two decimal places, and the year. The data is then grouped by department, gender, and year, with the final result limited to years less than or equal to 2002.</p>
+                <div>
+                    <!-- Preformatted Code -->
+                    <h3>Code</h3>
+                    <pre>
+                        <code>
+SELECT 
+    e.gender,
+    d.dept_name,
+    ROUND(AVG(s.salary), 2) AS salary,
+    YEAR(s.from_date) AS calendar_year
+FROM
+    t_salaries s
+        JOIN
+    t_employees e ON s.emp_no = e.emp_no
+        JOIN
+    t_dept_emp de ON de.emp_no = e.emp_no
+        JOIN
+    t_departments d ON d.dept_no = de.dept_no
+GROUP BY d.dept_no , e.gender , calendar_year
+HAVING calendar_year <= 2002
+ORDER BY d.dept_no;
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-button" data-target="#table3-wrapper">Table</button>
+                <div id="table3-wrapper" class="table-wrapper">
+                    
+                    <table id="table3" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class='tableauPlaceholder' id='viz1725831943698' style='position: relative'><noscript><a href='#'><img alt='Average annual employee salary ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart3&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Book22_17258314970630&#47;chart3' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart3&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1725831943698');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js'; vizElement.parentNode.insertBefore(scriptElement, vizElement); </script>
+                
+
+                <!-- QUESTION 4 -->
+                <h3>CALCULATION OF AVERAGE SALARY OF MALE AND FEMALE EMPLOYEES PER DEPARTMENT WITHIN A SPECIFIC SALARY RANGE</h3>
+                <p>
+                    This SQL stored procedure allows the calculation of the average salary of male and female employees 
+                    per department within a specified salary range. The user inputs two values (minimum and maximum salary), 
+                    and the procedure returns the average salary for employees falling within that range, grouped by department and gender. 
+                    The result displays the gender, department name, and average salary.
+                </p>
+                <div>
+                    <!-- Preformatted Code -->
+                    <h3>Code</h3>
+                    <pre>
+                        <code>
+DROP PROCEDURE IF EXISTS filter_salary;
+
+DELIMITER $$
+CREATE PROCEDURE filter_salary (IN p_min_salary FLOAT, IN p_max_salary FLOAT)
+BEGIN
+SELECT 
+    e.gender, d.dept_name, AVG(s.salary) as avg_salary
+FROM
+    t_salaries s
+        JOIN
+    t_employees e ON s.emp_no = e.emp_no
+        JOIN
+    t_dept_emp de ON de.emp_no = e.emp_no
+        JOIN
+    t_departments d ON d.dept_no = de.dept_no
+    WHERE s.salary BETWEEN p_min_salary AND p_max_salary
+GROUP BY d.dept_no, e.gender;
+END$$
+
+DELIMITER ;
+
+CALL filter_salary(50000, 90000);
+                        </code>
+                    </pre>
+                </div>
+                <button class="toggle-button" data-target="#table4-wrapper">Table</button>
+                <div id="table4-wrapper" class="table-wrapper">
+                    
+                    <table id="table4" border="1">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class='tableauPlaceholder' id='viz1725831974431' style='position: relative'><noscript><a href='#'><img alt='Average employee salary (since 1990) ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart4&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Book22_17258314970630&#47;chart4' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Bo&#47;Book22_17258314970630&#47;chart4&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1725831974431');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js'; vizElement.parentNode.insertBefore(scriptElement, vizElement); </script>
+            </section>
+        </div>
+
+
+		<!-- Footer -->
+		<footer id="footer">
+						
+			<section class="split contact">
+				
+				<section>
+					<h3>Phone</h3>
+					<p><a href="#">6946827543</a></p>
+				</section>
+				<section>
+					<h3>Email</h3>
+					<p><a href="#">miltosvout@gmail.com</a></p>
+				</section>
+				<section>
+					<h3>Social</h3>
+					<ul class="icons alt">
+						<li><a href="https://github.com/MILTOSV20" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+                        <li><a href="https://gr.linkedin.com/in/miltiadis-voutryas-7890b9306" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+					</ul>
+				</section>
+			</section>
+		</footer>
+
+		<!-- Copyright -->
+		<div id="copyright">
+			<ul><li></li><li><a href=""></a></li></ul>
+		</div>
+        <!-- Copyright -->
+        <div id="copyright">
+            <ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/createtable.js"></script>
+    <!-- Proper function call -->
+    <script>
+        $(document).ready(function () {
+            fetchAndDisplayCSV("assets/csv/EMPLOYEES/task1.csv", "table1");
+            fetchAndDisplayCSV("assets/csv/EMPLOYEES/task2.csv", "table2");
+            fetchAndDisplayCSV("assets/csv/EMPLOYEES/task3.csv", "table3");
+            fetchAndDisplayCSV("assets/csv/EMPLOYEES/task4.csv", "table4");
+
+            $('.toggle-button').on('click', function () {
+                var target = $(this).data('target');
+                $(target).toggleClass('show');
+            });
+        });
+    </script>
+</body>
+</html>
